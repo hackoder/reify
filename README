@@ -1,0 +1,4 @@
+Simple tool to render a jinja2 template from a yaml context
+
+
+echo context.yaml | ./templated ./template.j2 > template.out
