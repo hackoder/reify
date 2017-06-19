@@ -59,5 +59,8 @@ assert "stdin overrides envvar" "'' 'file'"
 
 echo 'TEST=envfile' > $ENVFILE
 TEST=envvar run test.tmpl -e $ENVFILE
-assert "envvar overrides envvar" "'' 'envfile'"
+assert "envfile overrides envvar" "'' 'envfile'"
 
+echo 'TEST=$BASE/envfile' > $ENVFILE
+BASE=base run test.tmpl -e $ENVFILE
+assert "envfile can resolve environment vars" "'' 'base/envfile'"

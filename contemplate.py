@@ -12,13 +12,11 @@ def have_stdin():
     return select.select([sys.stdin, ], [], [], 0.0)[0]
 
 
-def parse_envfile(envfile):
-    env = {}
+def parse_envfile(env, envfile):
     for line in envfile:
         line = string.Template(line.strip()).substitute(env)
         left, _, right = line.partition('=')
         env[left] = right
-    return env
 
 
 def get_parser():
@@ -50,7 +48,7 @@ def main():
     context = {'env': os.environ.copy()}
 
     if args.envfile:
-        context['env'].update(parse_envfile(args.envfile))
+        parse_envfile(context['env'], args.envfile)
 
     if have_stdin():
         context.update(yaml.safe_load(sys.stdin))
