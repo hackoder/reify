@@ -2,6 +2,7 @@
 set -eu
 
 CONTEXT=$(mktemp)
+ENVFILE=$(mktemp)
 RESULT=$(mktemp)
 EXEC=${EXEC:-./contemplate}
 
@@ -10,7 +11,7 @@ FAIL="\e[31mFAIL\e[0m"
 
 run()
 {
-    $EXEC test.tmpl $@ > $RESULT
+    $EXEC $@ > $RESULT
 }
 
 assert()
@@ -19,26 +20,44 @@ assert()
     test "$(<$RESULT)" = "$2" && echo -e $OK || echo -e "$FAIL: "$(<$RESULT)" != "$2""
 }
 
-run
+run test.tmpl
 assert "no context" "'' ''"
 
-echo 'test: stdin' | run
+echo 'test: stdin' | run test.tmpl
 assert "context from stdin" "'stdin' ''"
 
 echo 'test: file' > $CONTEXT
-run -c $CONTEXT
+run test.tmpl -c $CONTEXT
 assert "context from file" "'file' ''"
 
-TEST=envvar run
+TEST=envvar run test.tmpl
 assert "context from envvar" "'' 'envvar'"
 
+echo 'TEST=envfile' > $ENVFILE
+run test.tmpl -e $ENVFILE
+assert "context from envfile" "'' 'envfile'"
+
 echo 'test: file' > $CONTEXT
-echo 'test: stdin' | run -c $CONTEXT
+echo 'test: stdin' | run test.tmpl -c $CONTEXT
 assert "file overrides stdin" "'file' ''"
 
+echo 'TEST=envfile' > $ENVFILE
 echo 'env: {TEST: file}' > $CONTEXT
-TEST=envvar run -c $CONTEXT
+TEST=envvar run test.tmpl -c $CONTEXT -e $ENVFILE
+assert "file overrides envfile" "'' 'file'"
+
+echo 'env: {TEST: file}' > $CONTEXT
+TEST=envvar run test.tmpl -c $CONTEXT
 assert "file overrides envvar" "'' 'file'"
 
-echo 'env: {TEST: file}' | TEST=envvar run
+echo 'TEST=envfile' > $ENVFILE
+echo 'env: {TEST: stdin}' | run test.tmpl -e $ENVFILE
+assert "stdin overrides envfile" "'' 'stdin'"
+
+echo 'env: {TEST: file}' | TEST=envvar run test.tmpl
 assert "stdin overrides envvar" "'' 'file'"
+
+echo 'TEST=envfile' > $ENVFILE
+TEST=envvar run test.tmpl -e $ENVFILE
+assert "envvar overrides envvar" "'' 'envfile'"
+
