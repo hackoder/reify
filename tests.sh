@@ -3,13 +3,14 @@ set -eu
 
 CONTEXT=$(mktemp)
 RESULT=$(mktemp)
+EXEC=${EXEC:-./contemplate}
 
 OK="\e[32mOK  \e[0m"
 FAIL="\e[31mFAIL\e[0m"
 
 run()
 {
-    env/bin/python contemplate.py test.tmpl $@ > $RESULT
+    $EXEC test.tmpl $@ > $RESULT
 }
 
 assert()
