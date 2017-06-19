@@ -15,3 +15,7 @@ env/bin/pip:
 
 clean:
 	rm -rf build env contemplate
+
+.PHONY: test
+test: contemplate env/bin/pip 
+	./tests.sh
