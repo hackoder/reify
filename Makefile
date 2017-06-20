@@ -8,7 +8,8 @@ contemplate: env/bin/pip contemplate.py build.py Makefile
 	rm -rf build/*-info build/*/__pycache__
 	rm build/markupsafe/_speedups*
 	cp contemplate.py build/__main__.py
-	env/bin/python -m zipapp -p "/usr/bin/env python3" build -o contemplate
+	env/bin/python build.py
+	env/bin/python -m zipapp -p "/usr/bin/env python3" build -o contemplate.raw
 
 env/bin/pip:
 	virtualenv env --python python3

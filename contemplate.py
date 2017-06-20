@@ -19,6 +19,15 @@ def parse_envfile(env, envfile):
         env[left] = right
 
 
+def parse_yamlfile(stream):
+    ctx = yaml.safe_load(stream)
+    if not ctx:
+        return {}
+    if isinstance(ctx, dict):
+        return ctx
+    raise Exception('could not load dict from yaml in {}'.format(stream.name))
+
+
 def get_parser():
     parser = argparse.ArgumentParser(description='render a jinja2 template')
     parser.add_argument(
@@ -51,10 +60,10 @@ def main():
         parse_envfile(context['env'], args.envfile)
 
     if have_stdin():
-        context.update(yaml.safe_load(sys.stdin))
+        context.update(parse_yamlfile(sys.stdin))
 
     if args.context:
-        context.update(yaml.safe_load(args.context))
+        context.update(parse_yamlfile(args.context))
 
     print(template.render(context))
 
