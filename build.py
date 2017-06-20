@@ -20,4 +20,4 @@ def create_archive(source, target, interpreter):
 
 
 if __name__ == '__main__':
-    create_archive('build', 'contemplate', '/usr/bin/python3')
+    create_archive('build', 'contemplate', '/usr/bin/env python3')
