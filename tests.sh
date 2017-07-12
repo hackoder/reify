@@ -11,13 +11,14 @@ FAIL="\e[31mFAIL\e[0m"
 
 run()
 {
-    $EXEC $@ > $RESULT
+    # shellcheck disable=SC2068
+    $EXEC $@ > "$RESULT"
 }
 
 assert()
 {
-    echo -n $1...
-    test "$(<$RESULT)" = "$2" && echo -e $OK || echo -e "$FAIL: "$(<$RESULT)" != "$2""
+    echo -n "$1..."
+    test "$(<"$RESULT")" = "$2" && echo -e "$OK" || echo -e "$FAIL: $(<"$RESULT") != $2"
 }
 
 run test.tmpl
@@ -26,43 +27,53 @@ assert "no context" "'' ''"
 echo 'test: stdin' | run test.tmpl
 assert "context from stdin" "'stdin' ''"
 
-echo 'test: file' > $CONTEXT
-run test.tmpl -c $CONTEXT
+echo 'test: file' > "$CONTEXT"
+run test.tmpl -c "$CONTEXT"
 assert "context from file" "'file' ''"
+
+run test.tmpl test=extra
+assert "context from extra" "'extra' ''"
 
 TEST=envvar run test.tmpl
 assert "context from envvar" "'' 'envvar'"
 
-echo 'TEST=envfile' > $ENVFILE
-run test.tmpl -e $ENVFILE
+echo 'TEST=envfile' > "$ENVFILE"
+run test.tmpl -e "$ENVFILE"
 assert "context from envfile" "'' 'envfile'"
 
-echo 'test: file' > $CONTEXT
-echo 'test: stdin' | run test.tmpl -c $CONTEXT
+echo 'test: file' > "$CONTEXT"
+echo 'test: stdin' | run test.tmpl -c "$CONTEXT"
 assert "file overrides stdin" "'file' ''"
 
-echo 'TEST=envfile' > $ENVFILE
-echo 'env: {TEST: file}' > $CONTEXT
-TEST=envvar run test.tmpl -c $CONTEXT -e $ENVFILE
+echo 'test: file' > "$CONTEXT"
+run test.tmpl test=extra -c "$CONTEXT"
+assert "extra overrides file" "'extra' ''"
+
+echo 'test: stdin' | run test.tmpl test=extra
+assert "extra overrides stdin" "'extra' ''"
+
+echo 'TEST=envfile' > "$ENVFILE"
+echo 'env: {TEST: file}' > "$CONTEXT"
+TEST=envvar run test.tmpl -c "$CONTEXT" -e "$ENVFILE"
 assert "file overrides envfile" "'' 'file'"
 
-echo 'env: {TEST: file}' > $CONTEXT
-TEST=envvar run test.tmpl -c $CONTEXT
+echo 'env: {TEST: file}' > "$CONTEXT"
+TEST=envvar run test.tmpl -c "$CONTEXT"
 assert "file overrides envvar" "'' 'file'"
 
-echo 'TEST=envfile' > $ENVFILE
-echo 'env: {TEST: stdin}' | run test.tmpl -e $ENVFILE
+echo 'TEST=envfile' > "$ENVFILE"
+echo 'env: {TEST: stdin}' | run test.tmpl -e "$ENVFILE"
 assert "stdin overrides envfile" "'' 'stdin'"
 
 echo 'env: {TEST: file}' | TEST=envvar run test.tmpl
 assert "stdin overrides envvar" "'' 'file'"
 
-echo 'TEST=envfile' > $ENVFILE
-TEST=envvar run test.tmpl -e $ENVFILE
+echo 'TEST=envfile' > "$ENVFILE"
+TEST=envvar run test.tmpl -e "$ENVFILE"
 assert "envfile overrides envvar" "'' 'envfile'"
 
-echo -e '# comment\nTEST=$BASE/envfile' > $ENVFILE
-BASE=base run test.tmpl -e $ENVFILE
+echo -e "# comment\nTEST=\$BASE/envfile" > "$ENVFILE"
+BASE=base run test.tmpl -e "$ENVFILE"
 assert "envfile can resolve environment vars" "'' 'base/envfile'"
 
 echo "" | run test.tmpl

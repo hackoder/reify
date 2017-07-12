@@ -30,12 +30,25 @@ def parse_yamlfile(stream):
     raise Exception('could not load dict from yaml in {}'.format(stream.name))
 
 
+def extra(raw_arg):
+    if '=' not in raw_arg:
+        raise argparse.ArgumentTypeError('extra config must be key=value')
+    return raw_arg.split('=', 1)
+
+
+
 def get_parser():
     parser = argparse.ArgumentParser(description='render a jinja2 template')
     parser.add_argument(
         'template',
         type=argparse.FileType('r'),
         help='the template file',
+    )
+    parser.add_argument(
+        'extra',
+        nargs='*',
+        type=extra,
+        help='extra key value pairs (foo=bar)',
     )
     parser.add_argument(
         '--context', '-c',
@@ -66,6 +79,8 @@ def main():
 
     if args.context:
         context.update(parse_yamlfile(args.context))
+
+    context.update(args.extra)
 
     print(template.render(context))
 
