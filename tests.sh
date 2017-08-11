@@ -12,7 +12,7 @@ FAIL="\e[31mFAIL\e[0m"
 run()
 {
     # shellcheck disable=SC2068
-    $EXEC $@ > "$RESULT"
+    $EXEC $@ -o "$RESULT"
 }
 
 assert()
@@ -20,6 +20,12 @@ assert()
     echo -n "$1..."
     test "$(<"$RESULT")" = "$2" && echo -e "$OK" || echo -e "$FAIL: $(<"$RESULT") != $2"
 }
+
+$EXEC test.tmpl > "$RESULT"
+assert "default output is stdout" "'' ''"
+
+$EXEC test.tmpl -o - > "$RESULT"
+assert "'-' is stdout" "'' ''"
 
 run test.tmpl
 assert "no context" "'' ''"

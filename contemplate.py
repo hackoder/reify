@@ -36,7 +36,6 @@ def extra(raw_arg):
     return raw_arg.split('=', 1)
 
 
-
 def get_parser():
     parser = argparse.ArgumentParser(description='render a jinja2 template')
     parser.add_argument(
@@ -60,6 +59,11 @@ def get_parser():
         type=argparse.FileType('r'),
         help='file with environment varibles',
     )
+    parser.add_argument(
+        '--output', '-o',
+        default=sys.stdout,
+        help='output file',
+    )
 
     return parser
 
@@ -81,8 +85,24 @@ def main():
         context.update(parse_yamlfile(args.context))
 
     context.update(args.extra)
+    content = template.render(context) + '\n'
 
-    print(template.render(context))
+    if args.output == '-':
+        args.output = sys.stdout
+
+    if args.output in (sys.stdout, sys.stderr):
+        args.output.write(content)
+    else:
+        temp = args.output + '.tmp'
+        try:
+            with open(temp, 'w') as f:
+                f.write(content)
+            os.rename(temp, args.output)
+        finally:
+            try:
+                os.remove(temp)
+            except FileNotFoundError:
+                pass
 
 
 if __name__ == '__main__':
