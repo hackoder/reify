@@ -113,3 +113,9 @@ def test_render_ctx_overrides_envfile():
     output = reify.render(
         TEMPLATE, {'env': {'TEST': 'ctx'}}, io.StringIO('TEST=envfile'), {})
     assert output == "'' 'ctx'\n"
+
+
+def test_reify_function(tmpdir):
+    path = str(tmpdir.join('file'))
+    reify.reify(path, TEMPLATE, {'test': 'test'})
+    assert open(path).read() == "'test' ''\n"

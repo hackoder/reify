@@ -79,7 +79,7 @@ def get_parser():
 
 
 def atomic_write(path, content):
-    temp = path + '.contemplate.tmp'
+    temp = path + '.reify.tmp'
     try:
         with open(temp, 'w') as f:
             f.write(content)
@@ -102,7 +102,7 @@ def render(template, context, envfile=None, env=os.environ):
     return tmpl.render(ctx) + '\n'
 
 
-def contemplate(output, template, context, envfile=None, env=os.environ):
+def reify(output, template, context, envfile=None, env=os.environ):
     atomic_write(output, render(template, context, envfile, env))
 
 
