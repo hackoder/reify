@@ -3,7 +3,7 @@ from setuptools import setup
 
 setup(
     name='reify',
-    version="0.1",
+    version="0.2",
     author="Simon Davy",
     author_email="simon.davy@canonical.com",
     classifiers=[
