@@ -3,11 +3,11 @@ from setuptools import setup
 
 setup(
     name='reify',
-    version="0.2",
+    version="0.3",
     author="Simon Davy",
     author_email="simon.davy@canonical.com",
     classifiers=[
-        "Development Status :: 4 - Beta",
+        "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",
         "Natural Language :: English",
     ],

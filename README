@@ -1,7 +1,5 @@
-Simple tool to render a jinja2 template from a yaml context
-
-
 usage: reify [-h] [--context CONTEXT] [--envfile ENVFILE] [--output OUTPUT]
+             [--mode MODE] [--charm-config CHARM_CONFIG]
              template [extra [extra ...]]
 
 render a jinja2 template
@@ -18,4 +16,9 @@ optional arguments:
   --envfile ENVFILE, -e ENVFILE
                         file with environment varibles
   --output OUTPUT, -o OUTPUT
-                        output file, defaults to stdout
+                        output file; defaults to stdout
+  --mode MODE, -m MODE  mode of output file, if not stdout; defaults to 0666 -
+                        umask
+  --charm-config CHARM_CONFIG
+                        charm config file, default values will be added to
+                        template context
