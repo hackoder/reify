@@ -26,6 +26,10 @@ jobs:
           python-version: ${{ matrix.python }}
       - name: install virtualenv
         run: sudo apt-get install python3-virtualenv
+      - name: setup virtualenv
+        run: |
+          virtualenv env -p python
+          env/bin/pip install -U pip
       - name: Run unit tests
         run: |
           make unittest

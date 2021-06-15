@@ -9,7 +9,7 @@ reify: env/bin/pip reify.py build.py Makefile
 	env/bin/python build.py
 
 env/bin/pip:
-	virtualenv env -p $(which python)
+	virtualenv env -p python3
 	env/bin/pip install -U pip
 	env/bin/pip install -e .
 
