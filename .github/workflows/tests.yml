@@ -1,4 +1,4 @@
-name: Unit-Tests
+name: Tests
 on:
   push:
     branches:
@@ -27,3 +27,21 @@ jobs:
       - name: Run unit tests
         run: |
           make unittest
+
+  functional-tests:
+    name: Functional Tests
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        python: [ 3.5, 3.6, 3.7, 3.8 ]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Run functional tests
+        run: |
+          make functional
